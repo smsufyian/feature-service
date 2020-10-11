@@ -1,0 +1,15 @@
+* text=auto
+*.java text
+*.xml text
+*.txt text
+*.md text
+*.html text
+*.properties text
+*.rb text
+*.pot text
+*.po text
+*.xsd text
+*.header text
+*.groovy text
+*.css text
+*.java	diff=java

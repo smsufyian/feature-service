@@ -1,0 +1,35 @@
+language: java
+
+sudo: required
+
+jdk:
+  - openjdk14
+
+cache:
+  directories:
+    - $HOME/.m2/repository
+
+env:
+  - MAVEN_CLI: '"clean install -Dcheckstyle.skip=false -Dformat.skip=false"'
+
+before_install:
+  - wget https://archive.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.zip
+  - unzip -qq apache-maven-3.6.3-bin.zip
+  - export M2_HOME=$PWD/apache-maven-3.6.3
+  - export PATH=$M2_HOME/bin:$PATH
+  - mvn -version
+
+install: true
+
+after_install:
+  - docker ps -a
+
+script:
+  - "mvn $MAVEN_CLI"
+
+notifications:
+  email:
+    recipients:
+      - s.m.sufyian@gmail.com
+    on_success: always
+    on_failure: always
