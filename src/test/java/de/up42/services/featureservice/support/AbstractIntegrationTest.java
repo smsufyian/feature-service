@@ -4,6 +4,7 @@ import com.jayway.restassured.builder.RequestSpecBuilder;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.specification.RequestSpecification;
 import de.up42.services.featureservice.FeatureServiceApplication;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +16,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 )
 
 @Slf4j
+@RequiredArgsConstructor
 public class AbstractIntegrationTest {
 
   @LocalServerPort

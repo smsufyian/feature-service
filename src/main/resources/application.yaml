@@ -1,0 +1,22 @@
+management:
+  trace:
+    http:
+      enabled: false
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health,info
+
+spring:
+  jmx:
+    enabled: false
+
+logging:
+  pattern:
+    level: "%5p %X{}"
+
+server:
+  error:
+    include-message: always
+  forward-headers-strategy: native
