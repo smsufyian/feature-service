@@ -20,3 +20,6 @@ server:
   error:
     include-message: always
   forward-headers-strategy: native
+
+feature:
+    not_found: Feature with given id donot exist

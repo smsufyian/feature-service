@@ -2,6 +2,7 @@ package de.up42.services.featureservice.service;
 
 import de.up42.services.featureservice.entity.Feature;
 import de.up42.services.featureservice.entity.Collection;
+import de.up42.services.featureservice.error.FeatureNotFoundException;
 import de.up42.services.featureservice.repository.JsonFileRepository;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,11 +15,12 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-public class FeatureLookupServiceTest{
+public class FeatureLookupServiceTest {
 
   @Mock
   JsonFileRepository jsonFileRepository;
@@ -26,14 +28,14 @@ public class FeatureLookupServiceTest{
   FeatureLookupService featureLookupService;
 
   @BeforeEach
-  public void setUp(){
+  public void setUp() {
     featureLookupService = new FeatureLookupService(jsonFileRepository);
   }
 
   @Test
   @Tag("service")
   @SneakyThrows
-  public void shouldReturnNonEmptyFeaturesListIfDatasourceIsNotEmpty(){
+  public void shouldReturnNonEmptyFeaturesListIfDatasourceIsNotEmpty() {
 
     given(jsonFileRepository.getAllFeatures(anyString()))
             .willReturn(nonEmptyFeaturesSource());
@@ -47,7 +49,7 @@ public class FeatureLookupServiceTest{
   @Test
   @Tag("service")
   @SneakyThrows
-  public void shouldReturnEmptyFeaturesListIfJsonDatasourceIsEmpty(){
+  public void shouldReturnEmptyFeaturesListIfJsonDatasourceIsEmpty() {
 
     given(jsonFileRepository.getAllFeatures(anyString()))
             .willReturn(List.of());
@@ -56,7 +58,48 @@ public class FeatureLookupServiceTest{
     assertThat(features).isEmpty();
   }
 
-  private static List<Collection> nonEmptyFeaturesSource(){
+  @Test
+  @Tag("service")
+  @SneakyThrows
+  public void shouldReturnFeatureFromNonEmptyFeatureList() {
+    given(jsonFileRepository.getAllFeatures(anyString()))
+            .willReturn(nonEmptyFeaturesSource());
+
+    var feature = featureLookupService.getFeatureById("39c2f29e");
+
+    assertThat(feature).isNotNull();
+    assertThat(feature.getProperties().getId()).isEqualTo("39c2f29e");
+  }
+
+  @Test
+  @Tag("service")
+  @SneakyThrows
+  public void shouldThrowExceptionIfFeatureNotFoundInNonEmptyList() {
+    given(jsonFileRepository.getAllFeatures(anyString()))
+            .willReturn(nonEmptyFeaturesSource());
+
+    var exception = assertThrows(FeatureNotFoundException.class, () -> {
+      featureLookupService.getFeatureById("39c2");
+    });
+
+    assertThat(exception).isNotNull();
+  }
+
+  @Test
+  @Tag("service")
+  @SneakyThrows
+  public void shouldThrowExceptionIfFeatureNotFoundInEmptyList(){
+    given(jsonFileRepository.getAllFeatures(anyString()))
+            .willReturn(List.of());
+
+    var exception = assertThrows(FeatureNotFoundException.class, () -> {
+      featureLookupService.getFeatureById("39c2");
+    });
+
+    assertThat(exception).isNotNull();
+  }
+
+  private static List<Collection> nonEmptyFeaturesSource() {
     return List.of(Collection.builder()
             .type("FeatureCollection")
             .features(List.of(

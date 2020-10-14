@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigInteger;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -57,6 +58,21 @@ public class FeaturesAPITest {
             .andExpect(jsonPath("features").isEmpty());
   }
 
+  @Test
+  @Tag("api")
+  @SneakyThrows
+  public void shouldReturnFeatureResponseDTOWhenDatasourceIsNotEmptyAndFeatureIsPresent() {
+
+    given(featureLookupService.getFeatureById(anyString()))
+            .willReturn(feature());
+    mockMvc.perform(get("/features/{id}","39c2f29e"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("id").value("39c2f29e"))
+            .andExpect(jsonPath("timestamp").value(BigInteger.ONE))
+            .andExpect(jsonPath("beginViewingDate").value(BigInteger.ONE))
+            .andExpect(jsonPath("endViewingDate").value(BigInteger.TWO))
+            .andExpect(jsonPath("missionName").value("Sentinel-1B"));
+  }
 
   private static List<Collection> nonEmptyDatasource() {
     return List.of(Collection.builder()
@@ -86,5 +102,25 @@ public class FeaturesAPITest {
 
   private static List<Collection> emptyDatasource() {
     return List.of();
+  }
+
+  private static Feature feature(){
+    return Feature.builder()
+            .type("Feature")
+            .properties(
+                    Feature.Properties.builder()
+                            .id("39c2f29e")
+                            .timestamp(BigInteger.ONE)
+                            .acquisition(
+                                    Feature.Properties.Acquisition.builder()
+                                            .endViewingDate(BigInteger.TWO)
+                                            .beginViewingDate(BigInteger.ONE)
+                                            .missionName("Sentinel-1B")
+                                            .build()
+                            )
+                            .quicklook("test")
+                            .build()
+            )
+            .build();
   }
 }
