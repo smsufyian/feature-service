@@ -6,6 +6,7 @@ import de.up42.services.featureservice.error.FeatureNotFoundException;
 import de.up42.services.featureservice.repository.JsonFileRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -26,6 +27,5 @@ public class FeatureLookupService {
                     .filter(feature -> feature.getProperties().getId().equalsIgnoreCase(id)))
             .findFirst()
             .orElseThrow(FeatureNotFoundException::new);
-
   }
 }

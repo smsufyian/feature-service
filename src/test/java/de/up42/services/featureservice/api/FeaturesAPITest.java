@@ -74,6 +74,18 @@ public class FeaturesAPITest {
             .andExpect(jsonPath("missionName").value("Sentinel-1B"));
   }
 
+  @Test
+  @Tag("api")
+  @SneakyThrows
+  public void shouldReturnFeatureImageResponseDTOWhenDatasourceIsNotEmptyAndFeatureIsPresent() {
+
+    given(featureLookupService.getFeatureById(anyString()))
+            .willReturn(feature());
+    mockMvc.perform(get("/features/{id}/quicklook","39c2f29e"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("quicklook").value("test"));
+  }
+
   private static List<Collection> nonEmptyDatasource() {
     return List.of(Collection.builder()
             .type("FeatureCollection")

@@ -6,13 +6,14 @@ import de.up42.services.featureservice.service.FeatureLookupService;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,10 +33,18 @@ public class FeaturesApi {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<FeatureResponseDTO> features(@PathVariable String id) {
+  public ResponseEntity<FeatureResponseDTO> feature(@PathVariable String id) {
     return ResponseEntity.ok()
             .body(FeatureResponseDTO.from(lookupService.getFeatureById(id)));
   }
+
+  @GetMapping("/{id}/quicklook")
+  public ResponseEntity<byte[]> image(@PathVariable String id) {
+    return ResponseEntity.ok()
+            .contentType(MediaType.IMAGE_PNG)
+            .body(from(lookupService.getFeatureById(id)));
+  }
+
 
   @Value
   @Builder
@@ -79,5 +88,11 @@ public class FeaturesApi {
                       .getMissionName())
               .build();
     }
+  }
+
+  private static byte[] from(Feature feature){
+    String base64EncodedImage = feature.getProperties().getQuicklook();
+    byte[] base64DecodedImage = Base64.decodeBase64(base64EncodedImage);
+    return base64DecodedImage;
   }
 }

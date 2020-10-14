@@ -6,9 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import java.math.BigInteger;
-
 import static com.jayway.restassured.RestAssured.given;
 
 @RequiredArgsConstructor
@@ -16,7 +13,7 @@ public class FeatureIntegrationIntegrationTest extends AbstractIntegrationTest {
 
   @Test
   @Tag("integration")
-  public void shouldReturnAllFeaturesInTheNonEmptySourceFile(){
+  public void ShouldReturnAllFeatures(){
     var ALL_FEATURES = "/features";
     given(requestSpecification)
             .when()
@@ -29,7 +26,7 @@ public class FeatureIntegrationIntegrationTest extends AbstractIntegrationTest {
 
   @Test
   @Tag("integration")
-  public void shouldReturnFeatureInTheNonEmptySourceFile(){
+  public void shouldReturnRequestedFeature(){
     var ALL_FEATURES = "/features/2ed68fe5-f719-48c3-aa27-b0cc155f06cb";
     given(requestSpecification)
             .when()
@@ -52,4 +49,17 @@ public class FeatureIntegrationIntegrationTest extends AbstractIntegrationTest {
             .contentType(ContentType.JSON)
             .body("errors",Matchers.hasSize(1));
   }
+
+  @Test
+  @Tag("integration")
+  public void shouldReturnImageOfTheRequestedFeature(){
+    var ALL_FEATURES = "/features/2ed68fe5-f719-48c3-aa27-b0cc155f06cb/quicklook";
+    given(requestSpecification)
+            .when()
+            .get(ALL_FEATURES)
+            .then()
+            .statusCode(200)
+            .contentType("image/png");
+  }
+
 }
